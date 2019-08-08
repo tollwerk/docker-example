@@ -1,0 +1,69 @@
+version: '3'
+services:
+  web:
+    image: tollwerk/typo3:latest
+    container_name: web
+    ports:
+      - "82:80"
+    volumes:
+      - .:/www
+    networks:
+      - backend
+      - frontend
+    env_file:
+      - .env
+    depends_on:
+      - php
+      - mysql
+  php:
+    image: php:${PHP_VERSION}-fpm
+    container_name: php
+    volumes:
+      - .:/www
+    networks:
+      - backend
+    env_file:
+      - .env
+  fractal:
+    image: tollwerk/fractal:latest
+    container_name: fractal
+    restart: always
+    ports:
+      - "3020:3000"
+    volumes:
+      - ./docs:/fractal/docs
+    networks:
+      - frontend
+    env_file:
+      - .env
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    container_name: mysql
+    restart: always
+    env_file:
+      - .env
+    expose:
+      - '3306'
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - backend
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 81:80
+    depends_on:
+      - mysql
+    networks:
+      - backend
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  db:
