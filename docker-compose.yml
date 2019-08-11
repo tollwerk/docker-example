@@ -1,10 +1,10 @@
 version: '3'
 services:
   web:
-    image: tollwerk/typo3:latest
+    image: daigoro.tollwerk.net:8083/tollwerk/typo3:latest
     container_name: web
     ports:
-      - "82:80"
+      - "80:80"
     volumes:
       - .:/www
     networks:
@@ -16,7 +16,7 @@ services:
       - php
       - mysql
   php:
-    image: php:${PHP_VERSION}-fpm
+    image: daigoro.tollwerk.net:8083/tollwerk/php${PHP_VERSION}:latest
     container_name: php
     volumes:
       - .:/www
@@ -25,11 +25,11 @@ services:
     env_file:
       - .env
   fractal:
-    image: tollwerk/fractal:latest
+    image: daigoro.tollwerk.net:8083/tollwerk/fractal:latest
     container_name: fractal
     restart: always
     ports:
-      - "3020:3000"
+      - "3000:3000"
     volumes:
       - ./docs:/fractal/docs
     networks:
@@ -46,6 +46,7 @@ services:
       - '3306'
     volumes:
       - db:/var/lib/mysql
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
     networks:
       - backend
   phpmyadmin:
@@ -55,7 +56,7 @@ services:
     env_file:
       - .env
     ports:
-      - 81:80
+      - "81:80"
     depends_on:
       - mysql
     networks:
